@@ -1,17 +1,22 @@
 from libqtile import widget, qtile, bar, layout
 from libqtile.config import Screen, Match
 
+
 from theme import colors, bar_color
+from widgets.mpd import Mpd2Imporved
+from widgets.mpris2 import Mpris2Improved
 
 
 def updates():
     qtile.groups[-2].cmd_toscreen()
     qtile.cmd_spawn("alacritty -t 'Updating The System' -e yay -Syu")
 
+
 def play_pause():
     for w in qtile.current_screen.top.widgets:
         if isinstance(w, widget.Mpris2):
             w.cmd_play_pause()
+
 
 widgets = [
     widget.CurrentLayoutIcon(scale=0.75),
@@ -27,8 +32,51 @@ widgets = [
         spacing=0,
     ),
     widget.Sep(),
+    # widget.TaskList(
+    #     border=colors["primary"],
+    #     icon_size=18,
+    #     font_size=12,
+    #     highlight_method="block",
+    #     rounded=True,
+    #     title_width_method="uniform",
+    #     txt_floating="",
+    #     txt_maximized="",
+    #     txt_minimized="",
+    #     markup_minimized="<span underline='double'>{}</span>",
+    # ),
+    widget.Mpris2(
+        stopped_text="No Music Playing",
+        width=436,
+        scroll=True,
+        scroll_delay=1,
+        scroll_clear=True,
+        scroll_step=4,
+        display_metadata=["xesam:title", "xesam:artist"],
+    ),
+    widget.Spacer(),
+    widget.Sep(),
+    widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
+    widget.Sep(),
+    # Mpd2Imporved(
+    #     width=320,
+    #     # color_progress=colors["primary"],
+    #     idle_message="No Music Playing",
+    #     status_format="{play_status} {title} - {artist}",
+    #     scroll=True,
+    #     scroll_delay=1,
+    #     scroll_clear=True,
+    #     scroll_step=4,
+    # ),
+    # Mpris2Improved(
+    #     width=320,
+    #     stopped_text="No Music Playing",
+    #     scroll=True,
+    #     scroll_delay=1,
+    #     scroll_clear=True,
+    #     scroll_step=4,
+    #     display_metadata=["xesam:title", "xesam:artist"],
+    # ),
     widget.TaskList(
-        width=1920 // 4 - 52,
         border=colors["primary"],
         icon_size=18,
         font_size=12,
@@ -41,29 +89,16 @@ widgets = [
         markup_minimized="<span underline='double'>{}</span>",
     ),
     widget.Sep(),
-    widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
-    widget.Sep(),
-    widget.Mpris2(
-        width=1920 // 7 + 10,
-        stopped_text="No Music Playing",
-        scroll=True,
-        scroll_delay=1,
-        scroll_clear=True,
-        scroll_step=4,
-        display_metadata=["xesam:title", "xesam:artist"],
-    ),
-    widget.TextBox(text="", width=bar.STRETCH, mouse_callbacks={"Button1": play_pause }),
-    widget.Sep(),
     widget.CPU(format="CPU: {load_percent:>3,.0f}%"),
     widget.Sep(),
     widget.Memory(format="MEM: {MemPercent:>2,.0f}%"),
     widget.Sep(),
-    widget.DF(visible_on_warn=False, format="SSD: {r:>2,.0f}%"),
-    widget.Sep(),
+    # widget.DF(visible_on_warn=False, format="SSD: {r:>2,.0f}%"),
+    # widget.Sep(),
     widget.NvidiaSensors(format="GPU: {temp}°C"),
     widget.Sep(),
-    widget.OpenWeather(format="{location_city}: {main_temp:2,.0f}°{units_temperature}", cityid=360995),
-    widget.Sep(),
+    # widget.OpenWeather(format="{location_city}: {main_temp:2,.0f}°{units_temperature}", cityid=360995),
+    # widget.Sep(),
     widget.KeyboardLayout(configured_keyboards=["us", "ara"], display_map={"ara": "AR"}),
     widget.Sep(),
     widget.CheckUpdates(

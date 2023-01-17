@@ -2,7 +2,8 @@ import os
 from pathlib import Path
 
 from libqtile.command import lazy
-from libqtile.config import Key, KeyChord
+from libqtile.config import Key, KeyChord, ScratchPad, DropDown
+
 # from libqtile import extension
 from command_set import CommandSet
 
@@ -28,6 +29,7 @@ edit_config_selector = CommandSet(
     selected_background=colors["primary"],
 )
 
+
 def launch_nvim_in_env(dir: Path):
     for file in dir.glob("*"):
         if file.match("Pipfile"):
@@ -43,12 +45,11 @@ edit_code_selector = CommandSet(
             dmenu_lines=20,
             foreground=colors["primary"],
             selected_background=colors["primary"],
-            commands={
-                dir.stem.capitalize(): launch_nvim_in_env(dir)
-                for dir in dirs.glob("*")
-            }
+            commands={dir.stem.capitalize(): launch_nvim_in_env(dir) for dir in dirs.glob("*")},
         )
-        if dirs.stem not in ["mysite", "site", "rice"] else launch_nvim_in_env(dirs) for dirs in (home_path / "code").glob("*")
+        if dirs.stem not in ["mysite", "site", "rice"]
+        else launch_nvim_in_env(dirs)
+        for dirs in (home_path / "code").glob("*")
     },
     dmenu_prompt="Edit >",
     dmenu_ignorecase=True,
@@ -75,17 +76,17 @@ keys = [
     Key([mod], "d", lazy.spawn("discord"), desc="launch discord"),
     Key([mod], "a", lazy.spawn(rofi_launcher), desc="app launcher"),
     Key([mod], "Return", lazy.spawn(terminal), desc="launch terminal"),
-    KeyChord(
-        [mod],
-        "g",
-        [
-            Key([mod], "s", lazy.spawn("steam"), desc="launch steam"),
-            Key([mod], "l", lazy.spawn("lutris"), desc="launch lutris"),
-            Key([mod], "e", lazy.spawn("heroic"), desc="launch heroic"),
-            Key([mod], "r", lazy.spawn("rare"), desc="launch rare"),
-        ],
-        mode="Game Launcher",
-    ),
+    # KeyChord(
+    #     [mod],
+    #     "g",
+    #     [
+    #         Key([mod], "s", lazy.spawn("steam"), desc="launch steam"),
+    #         Key([mod], "l", lazy.spawn("lutris"), desc="launch lutris"),
+    #         Key([mod], "e", lazy.spawn("heroic"), desc="launch heroic"),
+    #         Key([mod], "r", lazy.spawn("rare"), desc="launch rare"),
+    #     ],
+    #     mode="Game Launcher",
+    # ),
     # Window Movements
     Key([mod], "h", lazy.layout.left(), desc="move focus to left"),
     Key([mod], "j", lazy.layout.down(), desc="move focus down"),
@@ -163,7 +164,6 @@ keys = [
         lazy.spawn("gtk-launch spotify-adblock.desktop"),
         desc="launch spotify",
     ),  # yes I use adblock sue me (don't actually do that)
-
     # dmenu commands
     Key([mod, "shift"], "d", lazy.run_extension(script_selector), desc="script seletor"),
     # Key([mod, "shift"], "e", lazy.run_extension(edit_code_selector), desc="edit code seletor"),
@@ -195,4 +195,18 @@ for i in groups:
             ),
         ]
     )
+
+groups.append(
+    ScratchPad("ScratchPad", [
+            DropDown("terminal", terminal, width=0.4, height=0.5, x=0.3, y=0.2, opacity=1),
+        ]
+    )
+)
+keys.extend(
+    [
+        Key(
+            [mod, "shift"], "Return", lazy.group["ScratchPad"].dropdown_toggle("terminal")
+        ),
+    ]
+)
 
